@@ -3,7 +3,8 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
-const Employee = require("./constructors");
+const Employee = require("./constructors/Employee");
+const Department = require("./constructors/Department");
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -13,12 +14,16 @@ const connection = mysql.createConnection({
     database: "company_managingDB"
 });
 
+module.exports.connection = connection;
+const test = console.log("test", Date.now());
+module.exports.test = test;
+
 connection.connect(function (err) {
     if (err) throw err;
     start();
 });
 
-function start() {
+const start = () => {
     inquirer.prompt({
         type: "list",
         name: "initialTask",
@@ -26,35 +31,56 @@ function start() {
         choices: [
             "View all Employees",
             "Add Employee",
-            "Remove Employee"
+            "Remove Employee",
+            "Update Employee Role",
+            "Add a Role",
+            "View all Roles",
+            "Add a Department",
+            "View all Departments",
+            "Exit"
         ]
     }).then(function (answer) {
         if (answer.initialTask === "Add Employee") {
-            console.log("add employee");
-            addEmployee();
+            // console.log("add employee");
+            Employee.addEmployee();
         }
         else if (answer.initialTask === "View all Employees") {
             console.log("view all employees");
-            // viewEmployees();
+            Employee.viewEmployees();
         }
         else if (answer.initialTask === "Remove Employee") {
             console.log("remove employee");
             // rmvEmployee();
         }
+        else if (answer.initialTask === "Update Employee Role") {
+            console.log("update employee role");
+            // updateRole()
+        }
+        else if (answer.initialTask === "Add a Role") {
+            addRole();
+        }
+        else if (answer.initialTask === "View all Roles") {
+            viewRoles();
+        }
+        else if (answer.initialTask === "Add a Department") {
+            Department.addDepartment();
+        }
+        else if (answer.initialTask === "View all Departments") {
+            Department.viewDepartments();
+        }
+        
 
         else {
             console.log("Thank you for using our program!");
+            // break;
         };
     })
-    
+
 };
 
-async function viewEmployees() {
-    connection.query("SELECT * FROM employee", function (err, results) {
-        if (err) throw err;
-        //control for having no employees in db? console.log("You don't have any employees in our database")
-    })
-};
+module.exports.start = start;
+
+
 const stringValidator = async (input) => {
     if (input === '') {
         console.log('Oh no! Please enter your answer.');
@@ -63,6 +89,8 @@ const stringValidator = async (input) => {
     }
 };
 
+module.exports.stringValidator = stringValidator;
+
 const intValidator = async (input) => {
     if (isNaN(input) === false) {
         return true;
@@ -70,47 +98,59 @@ const intValidator = async (input) => {
     console.log("Please enter a valid ID number.")
     return false;
 };
-// const employeesArray = [];
+//rather than validating, what about splitting the input at commas and/or dollar signs and putting it back together
 
-async function addEmployee() {
+module.exports.intValidator = intValidator;
+
+async function addRole() {
     await inquirer.prompt([
         {
             type: "input",
-            message: "What is this Employee's first name?",
-            name: "first_name",
+            message: "What is this Role title?",
+            name: "title",
             validate: stringValidator
         }
-        ,{
+        , {
             type: "input",
-            message: "What is this Employee's last name?",
-            name: "last_name",
+            message: "What is the Salary for this Role?",
+            name: "salary",
             validate: stringValidator
         },
         {
-            type: "list",
-            message: "What is the Role ID for this Employee",
-            name: "role_id",
-            choices: [1, 2, 3, 4, 5, 6]
-        },
-        {
-            type: "input",
-            message: "What is the ID of the Manager for this Employee",
-            name: "manager_id",
+            type: "number",
+            message: "What is the Department ID for this Role?",
+            name: "department_id",
             validate: intValidator
         }
-    ]).then(function (answers) {
-        // const employee = new Employee(answers.first_name, answers.last_name, answers.role_id, answers.manager_id);
-        console.log(answers);
-        // console.log(employee);
-        // connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES(${employee})`, function (err, results) {
-        //     if (err) throw err;
-        //control for having no employees in db? console.log("You don't have any employees in our database")
-    });
+    ]).then(async function (answers) {
+        console.log("ansers", answers);
+        await connection.query("INSERT INTO role SET ?",
+            {
+                title: answers.title,
+                salary: answers.salary,
+                department_id: answers.department_id,
+            }, function (err, results) {
+            if (err) throw err;
+            console.log("New Role Created!");
+            start();
+        })
+    })
 };
-//     })
-// };
+
+async function viewRoles() {
+    await connection.query("SELECT * FROM role",
+    function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        start();
+    })
+};
 
 // async function rmvEmployee() {
+
+// };
+
+// async function updateRole() {
 
 // };
 
