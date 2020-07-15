@@ -3,7 +3,8 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
-const Index = require("../index")
+const Index = require("../index");
+const Class = require("../Classes");
 
 // const test = Index.test;
 // test;
@@ -20,6 +21,9 @@ const connection = mysql.createConnection({
     database: "company_managingDB"
 });
 
+let id = 0;
+let departmentsArray = [];
+
 const addDepartment = async () => {
     await inquirer.prompt(
         {
@@ -29,25 +33,32 @@ const addDepartment = async () => {
             // validate: stringValidator
         }
     ).then(async function (answer) {
+        id++;
+        let newDepartment = new Class.DepartmentClass(id, answer.name);
+        departmentsArray.push(newDepartment);
+        console.log(departmentsArray);
+        module.exports.departmentsArray = departmentsArray;
         await connection.query("INSERT INTO department SET ?",
             {
                 name: answer.name
             }, function (err, results) {
-            if (err) throw err;
-            console.log("New Department Created!");
-            Index.start();
-        })
+                if (err) throw err;
+                console.log("New Department Created!");
+                Index.start();
+            })
     })
+    
 };
 
 const viewDepartments = async () => {
     await connection.query("SELECT * FROM department",
-    function (err, res) {
-        if (err) throw err;
-        console.table(res);
-        Index.start();
-    })
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            Index.start();
+        })
 };
+
 
 module.exports.addDepartment = addDepartment;
 module.exports.viewDepartments = viewDepartments;

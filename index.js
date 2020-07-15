@@ -3,8 +3,9 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
-const Employee = require("./constructors/Employee");
-const Department = require("./constructors/Department");
+const Employee = require("./prompts/Employee");
+const Department = require("./prompts/Department");
+const Role = require("./prompts/Role");
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -53,14 +54,14 @@ const start = () => {
             // rmvEmployee();
         }
         else if (answer.initialTask === "Update Employee Role") {
-            console.log("update employee role");
-            // updateRole()
+            // console.log("update employee role");
+            updateEmpRole();
         }
         else if (answer.initialTask === "Add a Role") {
-            addRole();
+            Role.addRole();
         }
         else if (answer.initialTask === "View all Roles") {
-            viewRoles();
+            Role.viewRoles();
         }
         else if (answer.initialTask === "Add a Department") {
             Department.addDepartment();
@@ -102,49 +103,7 @@ const intValidator = async (input) => {
 
 module.exports.intValidator = intValidator;
 
-async function addRole() {
-    await inquirer.prompt([
-        {
-            type: "input",
-            message: "What is this Role title?",
-            name: "title",
-            validate: stringValidator
-        }
-        , {
-            type: "input",
-            message: "What is the Salary for this Role?",
-            name: "salary",
-            validate: stringValidator
-        },
-        {
-            type: "number",
-            message: "What is the Department ID for this Role?",
-            name: "department_id",
-            validate: intValidator
-        }
-    ]).then(async function (answers) {
-        console.log("ansers", answers);
-        await connection.query("INSERT INTO role SET ?",
-            {
-                title: answers.title,
-                salary: answers.salary,
-                department_id: answers.department_id,
-            }, function (err, results) {
-            if (err) throw err;
-            console.log("New Role Created!");
-            start();
-        })
-    })
-};
 
-async function viewRoles() {
-    await connection.query("SELECT * FROM role",
-    function (err, res) {
-        if (err) throw err;
-        console.table(res);
-        start();
-    })
-};
 
 // async function rmvEmployee() {
 
