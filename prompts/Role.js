@@ -1,17 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const path = require("path");
-const fs = require("fs");
 
 const Index = require("../index");
-const Class = require("../Classes");
-// const DepartmentsData = require("../index");
-const test = Index.test;
-test;
-
-// const connection = Index.connection;
-// const stringValidator = Index.stringValidator;
-// const intValidator = Index.intValidator;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -21,26 +11,15 @@ const connection = mysql.createConnection({
     database: "company_managingDB"
 });
 
-// let rolesArray = [];
-let choicesArray = [];
-
 const addRole = async () => {
-    // TODO: deal with - cannot read property 'map' of undefined
     await connection.query("SELECT * FROM department",
         async function (err, res) {
             if (err) throw err;
-            // let departmentsArray = res;
-            // console.log(departmentsArray);
+            let choicesArray = [];
 
-
-            for (i = 0; i < res.length - 1; i++) {
-                choicesArray.push(JSON.stringify(res[i].name));
-                // console.log(res[i].name);
+            for (i = 0; i < res.length; i++) {
+                choicesArray.push(res[i].id);
             }
-
-            // let choicesArray = departmentsArray.forEach(dept => console.log(dept.name));
-            console.log(choicesArray);
-
 
             await inquirer.prompt([
                 {
@@ -48,8 +27,8 @@ const addRole = async () => {
                     message: "What is this Role title?",
                     name: "title",
                     // validate: stringValidator
-                }
-                , {
+                },
+                {
                     type: "input",
                     message: "What is the Salary for this Role?",
                     name: "salary",
@@ -57,8 +36,8 @@ const addRole = async () => {
                 },
                 {
                     type: "list",
-                    message: "In which Department is this Role?",
-                    name: "department",
+                    message: "What is the department id for this role?",
+                    name: "department_id",
                     choices: choicesArray
 
                     // validate: intValidator
@@ -68,7 +47,7 @@ const addRole = async () => {
                     {
                         title: answers.title,
                         salary: answers.salary,
-                        department: answers.department,
+                        department_id: answers.department_id,
                     }, function (err, results) {
                         if (err) throw err;
                         console.log("New Role Created!");
@@ -88,9 +67,6 @@ const viewRoles = async () => {
         function (err, res) {
             if (err) throw err;
             console.table(res);
-            let newRole = new Class.RoleClass(res.id, res.title, res.salary);
-            let rolesArray = [newRole, ...res];
-            console.log(rolesArray);
             Index.start();
         })
 };

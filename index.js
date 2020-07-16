@@ -23,15 +23,26 @@ module.exports.test = test;
 connection.connect(function (err) {
     if (err) throw err;
     //TODO: make this work. Inquirer is ending after getting department data
-        start()
+    start()
 });
 const getDepartmentsData = async () => {
     await connection.query("SELECT * FROM department",
         function (err, res) {
             if (err) throw err;
-            // let departmentsArray = res;
-            // departmentsArray.forEach(dept => console.log(dept.name));
-            // module.exports.res = res;
+        })
+};
+
+const getRolesData = async () => {
+    await connection.query("SELECT * FROM role",
+        function (err, res) {
+            if (err) throw err;
+        })
+};
+
+const getEmployeesData = async () => {
+    await connection.query("SELECT * FROM employee",
+        function (err, res) {
+            if (err) throw err;
         })
 };
 // module.exports.getDepartmentsData = getDepartmentsData;
@@ -66,7 +77,7 @@ const start = async () => {
         }
         else if (answer.initialTask === "Update Employee Role") {
             // console.log("update employee role");
-            updateEmpRole();
+            Employee.updateEmpRole();
         }
         else if (answer.initialTask === "Add a Role") {
             Role.addRole();
@@ -88,6 +99,8 @@ const start = async () => {
         };
     })
     getDepartmentsData();
+    getRolesData();
+    getEmployeesData();
 };
 
 module.exports.start = start;
