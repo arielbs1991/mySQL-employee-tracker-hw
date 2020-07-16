@@ -6,6 +6,7 @@ const fs = require("fs");
 const Employee = require("./prompts/Employee");
 const Department = require("./prompts/Department");
 const Role = require("./prompts/Role");
+const Class = require("./Classes")
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -21,11 +22,21 @@ module.exports.test = test;
 
 connection.connect(function (err) {
     if (err) throw err;
-    start();
+    //TODO: make this work. Inquirer is ending after getting department data
+        start()
 });
-
-const start = () => {
-    inquirer.prompt({
+const getDepartmentsData = async () => {
+    await connection.query("SELECT * FROM department",
+        function (err, res) {
+            if (err) throw err;
+            // let departmentsArray = res;
+            // departmentsArray.forEach(dept => console.log(dept.name));
+            // module.exports.res = res;
+        })
+};
+// module.exports.getDepartmentsData = getDepartmentsData;
+const start = async () => {
+    await inquirer.prompt({
         type: "list",
         name: "initialTask",
         message: "What would you like to do?",
@@ -69,14 +80,14 @@ const start = () => {
         else if (answer.initialTask === "View all Departments") {
             Department.viewDepartments();
         }
-        
+
 
         else {
             console.log("Thank you for using our program!");
             // break;
         };
     })
-
+    getDepartmentsData();
 };
 
 module.exports.start = start;

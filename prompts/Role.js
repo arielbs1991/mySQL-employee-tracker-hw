@@ -5,7 +5,7 @@ const fs = require("fs");
 
 const Index = require("../index");
 const Class = require("../Classes");
-const DepartmentsData = require("./Department");
+// const DepartmentsData = require("../index");
 const test = Index.test;
 test;
 
@@ -21,61 +21,76 @@ const connection = mysql.createConnection({
     database: "company_managingDB"
 });
 
-let rolesArray = [];
-let id = 0;
+// let rolesArray = [];
+let choicesArray = [];
 
 const addRole = async () => {
-    console.log(DepartmentsData.departmentsArray);
-    let result = DepartmentsData.departmentsArray.map(el => el.name);
-    console.log(result);
-    };
-    
-    // await inquirer.prompt([
-    //     {
-    //         type: "input",
-    //         message: "What is this Role title?",
-    //         name: "title",
-    //         // validate: stringValidator
-    //     }
-    //     , {
-    //         type: "input",
-    //         message: "What is the Salary for this Role?",
-    //         name: "salary",
-    //         // validate: stringValidator
-    //     },
-    //     {
-    //         type: "list",
-    //         message: "In which Department is this Role?",
-    //         name: "department",
-    //         choices: {
-    //             choicesArray
-    //         }
-    //         // validate: intValidator
-    //     }
-    // ]).then(async function (answers) {
-    //     id++;
-    //     let newRole = new Class.RoleClass(id, answers.title, answers.salary);
-    //     rolesArray.push(newRole);
-    //     console.log(rolesArray);
-    //     console.log("ansers", answers);
-    //     await connection.query("INSERT INTO role SET ?",
-    //         {
-    //             title: answers.title,
-    //             salary: answers.salary,
-    //             department_id: answers.department_id,
-    //         }, function (err, results) {
-    //             if (err) throw err;
-    //             console.log("New Role Created!");
-    //             Index.start();
-    //         })
-    // })
-// };
+    // TODO: deal with - cannot read property 'map' of undefined
+    await connection.query("SELECT * FROM department",
+        async function (err, res) {
+            if (err) throw err;
+            // let departmentsArray = res;
+            // console.log(departmentsArray);
+
+
+            for (i = 0; i < res.length - 1; i++) {
+                choicesArray.push(JSON.stringify(res[i].name));
+                // console.log(res[i].name);
+            }
+
+            // let choicesArray = departmentsArray.forEach(dept => console.log(dept.name));
+            console.log(choicesArray);
+
+
+            await inquirer.prompt([
+                {
+                    type: "input",
+                    message: "What is this Role title?",
+                    name: "title",
+                    // validate: stringValidator
+                }
+                , {
+                    type: "input",
+                    message: "What is the Salary for this Role?",
+                    name: "salary",
+                    // validate: stringValidator
+                },
+                {
+                    type: "list",
+                    message: "In which Department is this Role?",
+                    name: "department",
+                    choices: choicesArray
+
+                    // validate: intValidator
+                }
+            ]).then(async function (answers) {
+                await connection.query("INSERT INTO role SET ?",
+                    {
+                        title: answers.title,
+                        salary: answers.salary,
+                        department: answers.department,
+                    }, function (err, results) {
+                        if (err) throw err;
+                        console.log("New Role Created!");
+                        Index.start();
+                    }
+                )
+            });
+        }
+    );
+
+};
+
+
 
 const viewRoles = async () => {
     await connection.query("SELECT * FROM role",
         function (err, res) {
             if (err) throw err;
             console.table(res);
+            let newRole = new Class.RoleClass(res.id, res.title, res.salary);
+            let rolesArray = [newRole, ...res];
+            console.log(rolesArray);
             Index.start();
         })
 };

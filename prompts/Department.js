@@ -13,6 +13,8 @@ const Class = require("../Classes");
 // const stringValidator = Index.stringValidator;
 // const intValidator = Index.intValidator;
 
+//TODO: every time the code is run start with a SELECT * from each table
+
 const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -21,8 +23,7 @@ const connection = mysql.createConnection({
     database: "company_managingDB"
 });
 
-let id = 0;
-let departmentsArray = [];
+// let departmentsArray = [];
 
 const addDepartment = async () => {
     await inquirer.prompt(
@@ -33,11 +34,6 @@ const addDepartment = async () => {
             // validate: stringValidator
         }
     ).then(async function (answer) {
-        id++;
-        let newDepartment = new Class.DepartmentClass(id, answer.name);
-        departmentsArray.push(newDepartment);
-        console.log(departmentsArray);
-        module.exports.departmentsArray = departmentsArray;
         await connection.query("INSERT INTO department SET ?",
             {
                 name: answer.name
@@ -52,6 +48,7 @@ const addDepartment = async () => {
 
 const viewDepartments = async () => {
     await connection.query("SELECT * FROM department",
+    //do I need to skip the first row?
         function (err, res) {
             if (err) throw err;
             console.table(res);

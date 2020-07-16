@@ -20,8 +20,8 @@ const connection = mysql.createConnection({
     database: "company_managingDB"
 });
 
-let employeesArray = [];
-let id = 0;
+// let employeesArray = [];
+
 const addEmployee = async () => {
     await inquirer.prompt([
         {
@@ -30,7 +30,7 @@ const addEmployee = async () => {
             name: "first_name",
             // validate: stringValidator
         }
-        , {
+        ,{
             type: "input",
             message: "What is this Employee's last name?",
             name: "last_name",
@@ -50,10 +50,6 @@ const addEmployee = async () => {
         }
     ]).then(async function (answers) {
         console.log("answers", answers);
-        id++;
-        let newEmployee = new Class.EmployeeClass(id, answers.first_name, answers.last_name, answers.role_id, answers.manager_id);
-        employeesArray.push(newEmployee);
-        console.log(employeesArray);
         await connection.query("INSERT INTO employee SET ?",
             {
                 first_name: answers.first_name,
@@ -73,6 +69,9 @@ const viewEmployees = async () => {
         function (err, res) {
             if (err) throw err;
             console.table(res);
+            let newEmployee = new Class.EmployeeClass(res.id, res.first_name, res.last_name, res.role_id, res.manager_id);
+            let employeesArray = [newEmployee, ...res];
+            console.log(employeesArray);
             Index.start();
         })
 };

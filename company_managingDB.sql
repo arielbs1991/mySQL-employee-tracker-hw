@@ -11,14 +11,14 @@ CREATE TABLE role(
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(30) NOT NULL,
     salary DECIMAL NOT NULL,
-    department_id INT NOT NULL REFERENCES department(id),
+    department_name INT NOT NULL REFERENCES department(name),
     PRIMARY KEY (id)
 );
 CREATE TABLE employee(
     id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
-    role_id INT NOT NULL REFERENCES role(id),
-    manager_id INT REFERENCES employee(id),
+    role_title INT NOT NULL REFERENCES role(title),
+    manager_name INT REFERENCES employee(name),
     PRIMARY KEY (id)
 );
