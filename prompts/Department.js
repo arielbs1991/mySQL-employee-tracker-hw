@@ -1,19 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const path = require("path");
-const fs = require("fs");
 
 const Index = require("../index");
-const Class = require("../Classes");
-
-// const test = Index.test;
-// test;
-
-// const connection = Index.connection;
-// const stringValidator = Index.stringValidator;
-// const intValidator = Index.intValidator;
-
-//TODO: every time the code is run start with a SELECT * from each table
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -22,8 +10,6 @@ const connection = mysql.createConnection({
     password: "password",
     database: "company_managingDB"
 });
-
-// let departmentsArray = [];
 
 const addDepartment = async () => {
     await inquirer.prompt(
@@ -48,7 +34,6 @@ const addDepartment = async () => {
 
 const viewDepartments = async () => {
     await connection.query("SELECT * FROM department",
-    //do I need to skip the first row?
         function (err, res) {
             if (err) throw err;
             console.table(res);
@@ -56,6 +41,36 @@ const viewDepartments = async () => {
         })
 };
 
+const rmvDepartment = async () => {
+    await connection.query("SELECT * FROM department",
+        async function (err, res) {
+            if (err) throw err;
+
+            let departmentArray = [];
+
+            for (i = 0; i < res.length; i++) {
+                departmentArray.push(res[i].name);
+
+            }
+            await inquirer.prompt(
+                {
+                    type: "list",
+                    name: "name",
+                    message: "Which Department would you like to remove?",
+                    choices: departmentArray
+                }).then(async function (answers) {
+                    await connection.query("DELETE FROM department WHERE name = ?", [answers.title], async function (err, res) {
+                        if (err) throw err;
+                        console.log(`Department Successfully Removed!`);
+                        Index.start();
+                    }
+                    )
+                });
+        }
+
+    );
+};
 
 module.exports.addDepartment = addDepartment;
 module.exports.viewDepartments = viewDepartments;
+module.exports.rmvDepartment = rmvDepartment;

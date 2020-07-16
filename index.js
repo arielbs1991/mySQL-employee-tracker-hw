@@ -1,12 +1,9 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const path = require("path");
-const fs = require("fs");
 
 const Employee = require("./prompts/Employee");
 const Department = require("./prompts/Department");
 const Role = require("./prompts/Role");
-const Class = require("./Classes")
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -16,13 +13,8 @@ const connection = mysql.createConnection({
     database: "company_managingDB"
 });
 
-module.exports.connection = connection;
-const test = console.log("test", Date.now());
-module.exports.test = test;
-
 connection.connect(function (err) {
     if (err) throw err;
-    //TODO: make this work. Inquirer is ending after getting department data
     start()
 });
 const getDepartmentsData = async () => {
@@ -58,25 +50,24 @@ const start = async () => {
             "Update Employee Role",
             "Add a Role",
             "View all Roles",
+            "Remove a Role",
             "Add a Department",
             "View all Departments",
+            "Remove a Department",
+            // "View Employees by Manager ID",
             "Exit"
         ]
     }).then(function (answer) {
         if (answer.initialTask === "Add Employee") {
-            // console.log("add employee");
             Employee.addEmployee();
         }
         else if (answer.initialTask === "View all Employees") {
-            console.log("view all employees");
             Employee.viewEmployees();
         }
         else if (answer.initialTask === "Remove Employee") {
-            console.log("remove employee");
-            // rmvEmployee();
+            Employee.rmvEmployee();
         }
         else if (answer.initialTask === "Update Employee Role") {
-            // console.log("update employee role");
             Employee.updateEmpRole();
         }
         else if (answer.initialTask === "Add a Role") {
@@ -85,13 +76,21 @@ const start = async () => {
         else if (answer.initialTask === "View all Roles") {
             Role.viewRoles();
         }
+        else if (answer.initialTask === "Remove a Role") {
+            Role.rmvRole();
+        }
         else if (answer.initialTask === "Add a Department") {
             Department.addDepartment();
+        }
+        else if (answer.initialTask === "Remove a Department") {
+            Department.rmvDepartment();
         }
         else if (answer.initialTask === "View all Departments") {
             Department.viewDepartments();
         }
-
+        // else if (answer.initialTask === "View Employees by Manager ID") {
+        //     Employee.viewByManager();
+        // }
 
         else {
             console.log("Thank you for using our program!");
@@ -127,16 +126,6 @@ const intValidator = async (input) => {
 
 module.exports.intValidator = intValidator;
 
-
-
-// async function rmvEmployee() {
-
-// };
-
-// async function updateRole() {
-
-// };
-
    // "View all employees by Role",
             // "View all employees by Manager",
             // "View all employees by Department",
@@ -145,6 +134,4 @@ module.exports.intValidator = intValidator;
             // "View all Managers",
             // "Add Manager",
             // "Remove Manager",
-            // "View all Departments",
-            // "Add Department",
-            // "Remove Department"
+  

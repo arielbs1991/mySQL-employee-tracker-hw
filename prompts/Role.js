@@ -71,5 +71,35 @@ const viewRoles = async () => {
         })
 };
 
+const rmvRole = async () => {
+    await connection.query("SELECT * FROM role",
+        async function (err, res) {
+            if (err) throw err;
+
+            let roleArray = [];
+
+            for (i = 0; i < res.length; i++) {
+                roleArray.push(res[i].title);
+            }
+            await inquirer.prompt(
+                {
+                    type: "list",
+                    name: "title",
+                    message: "Which Role would you like to remove?",
+                    choices: roleArray
+                }).then(async function (answers) {
+                    await connection.query("DELETE FROM role WHERE title = ?", [answers.title], async function (err, res) {
+                        if (err) throw err;
+                        console.log(`Role Successfully Removed!`);
+                        Index.start();
+                    }
+                    )
+                });
+        }
+
+    );
+};
+
 module.exports.addRole = addRole;
 module.exports.viewRoles = viewRoles;
+module.exports.rmvRole = rmvRole;
