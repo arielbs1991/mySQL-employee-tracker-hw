@@ -17,6 +17,9 @@ connection.connect(function (err) {
     if (err) throw err;
     start()
 });
+const endConnection = async () => {
+    connection.end();
+}
 const getDepartmentsData = async () => {
     await connection.query("SELECT * FROM department",
         function (err, res) {
@@ -93,7 +96,11 @@ const start = async () => {
         // }
 
         else {
-            console.log("Thank you for using our program!");
+            // endConnection();
+            return console.log("Thank you for using our program!");
+            // connection.end(function (err) {
+            //     if (err) throw err;
+            // });
             // break;
         };
     })

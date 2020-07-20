@@ -35,7 +35,9 @@
 
     ## Links and Images
 
-    https://drive.google.com/file/d/106jC0ioT6ZN-Zq13u_z-ehiyCB2DaPI1/view
+    https://youtu.be/WeDOUZlFmMQ
+
+    (broken link)[https://drive.google.com/file/d/106jC0ioT6ZN-Zq13u_z-ehiyCB2DaPI1/view]
 
     https://github.com/arielbs1991/mySQL-employee-tracker-hw
 
